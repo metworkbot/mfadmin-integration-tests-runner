@@ -1,0 +1,20 @@
+pipeline:
+  clone_mfadmin:
+    image: docker:git
+    commands:
+      - git clone -b ${DRONE_BRANCH} https://github.com/metwork-framework/mfadmin.git mfadmin
+  runtests:
+    image: metwork/mfext-${OS_VERSION}-testimage:${DRONE_BRANCH}
+    commands:
+      - yum -y install metwork-mfadmin
+      - rpm -qa | grep metwork
+      - ./run_tests.sh
+    when:
+      branch: [ master, integration, ci_*, pci_* ]
+
+matrix:
+  OS_VERSION:
+    - centos6
+    - centos7
+
+branches: [ master, integration, ci_*, pci_* ]
